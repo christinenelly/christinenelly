@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Fast Bank Transfer</title>
+  </head>
+  <body>
+    <h1>Fast Bank Transfer</h1>
+    <p>Use API Key: <code>devkey</code> (change via env `API_KEY`)</p>
+
+    <h2>Create Account</h2>
+    <form id="createForm">
+      Owner: <input id="owner" /> Initial balance: <input id="balance" type="number" step="0.01" />
+      <button>Create</button>
+    </form>
+    <pre id="createResult"></pre>
+
+    <h2>Transfer</h2>
+    <form id="transferForm">
+      From ID: <input id="from" /> To ID: <input id="to" /> Amount: <input id="amount" step="0.01" />
+      <button>Transfer</button>
+    </form>
+    <pre id="transferResult"></pre>
+
+    <script>
+      const headers = { 'Content-Type': 'application/json', 'X-API-Key': 'devkey' };
+      document.getElementById('createForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const owner = document.getElementById('owner').value;
+        const balance = parseFloat(document.getElementById('balance').value) || 0;
+        const res = await fetch('/accounts', { method: 'POST', headers, body: JSON.stringify({ owner, initial_balance: balance }) });
+        document.getElementById('createResult').innerText = await res.text();
+      });
+
+      document.getElementById('transferForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const from = parseInt(document.getElementById('from').value);
+        const to = parseInt(document.getElementById('to').value);
+        const amount = parseFloat(document.getElementById('amount').value) || 0;
+        const res = await fetch('/transfer', { method: 'POST', headers, body: JSON.stringify({ from_id: from, to_id: to, amount }) });
+        document.getElementById('transferResult').innerText = await res.text();
+      });
+    </script>
+  </body>
+</html>
